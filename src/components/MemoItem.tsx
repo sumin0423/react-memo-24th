@@ -1,9 +1,10 @@
+import type { Memo } from "../types/memo";
 import { tags } from "../data/tags";
 
-export default function MemoItem({ memo, onTogglePin, onSelect }) {
+export default function MemoItem({ memo, onTogglePin, onSelect }: { memo: Memo; onTogglePin: (id: number) => void; onSelect: (memo: Memo) => void }) {
   return (
     <li
-      className={`relative aspect-square w-full rounded-[20px] p-5 text-accent sm:w-[calc((100%-20px)/2)] lg:w-[calc((100%-60px)/4)] ${tags[memo.tag].cardClass}`}
+      className={`relative aspect-square min-h-[240px] w-full rounded-[20px] p-5 text-accent sm:w-[calc((100%-20px)/2)] lg:w-[calc((100%-60px)/4)] ${tags[memo.tag].cardClass}`}
     >
       <article className="flex h-full flex-col gap-3">
         <button
@@ -27,9 +28,9 @@ export default function MemoItem({ memo, onTogglePin, onSelect }) {
             />
           </button>
         </header>
-        <p className="pointer-events-none min-h-0 flex-1 overflow-hidden whitespace-pre-wrap text-sm leading-[1.4] break-words">
+        <div className="pointer-events-none min-h-0 flex-1"><p className="line-clamp-4 whitespace-pre-wrap text-sm leading-[1.4] break-words">
           {memo.content}
-        </p>
+        </p></div>
         <footer className="pointer-events-none flex shrink-0 justify-between gap-2 text-sm">
           <span>{tags[memo.tag].label}</span>
           <time dateTime={memo.date}>{memo.date.replaceAll("-", ".")}</time>

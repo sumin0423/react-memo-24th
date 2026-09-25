@@ -1,3 +1,5 @@
+import type { Tag, TagFilter } from "../types/memo";
+export type SearchBarProps = { searchText: string; onSearchChange: (value: string) => void; selectedTag: TagFilter; onTagChange: (value: TagFilter) => void };
 import { tags } from "../data/tags";
 
 export default function SearchBar({
@@ -5,12 +7,12 @@ export default function SearchBar({
   onSearchChange,
   selectedTag,
   onTagChange,
-}) {
+}: SearchBarProps) {
   return (
     <form
       role="search"
       onSubmit={(event) => event.preventDefault()}
-      className="flex h-20 min-w-0 basis-full sm:flex-1 sm:basis-auto items-center gap-3 rounded-[28px] bg-surface p-4"
+      className="flex h-20 min-w-0 basis-full sm:flex-1 sm:basis-auto items-center gap-3 rounded-[28px] bg-surface p-4 transition-shadow focus-within:ring-2 focus-within:ring-soft"
     >
       <div className="relative shrink-0">
         <label htmlFor="tag" className="sr-only">
@@ -19,11 +21,11 @@ export default function SearchBar({
         <select
           id="tag"
           value={selectedTag}
-          onChange={(event) => onTagChange(event.target.value)}
+          onChange={(event) => onTagChange(event.target.value as TagFilter)}
           className={`h-9 w-[116px] appearance-none rounded-full bg-page text-sm font-bold ${selectedTag === "all" ? "pl-4 pr-9" : `pl-11 pr-2 ${tags[selectedTag].textClass}`}`}
         >
           <option value="all">태그 선택</option>
-          {Object.keys(tags).map((tag) => (
+          {(Object.keys(tags) as Tag[]).map((tag) => (
             <option key={tag} value={tag}>
               {tags[tag].label}
             </option>
@@ -44,7 +46,7 @@ export default function SearchBar({
         value={searchText}
         onChange={(event) => onSearchChange(event.target.value)}
         placeholder="원하는 메모를 검색하세요"
-        className="min-w-0 flex-1 text-sm placeholder:text-muted"
+        className="h-full min-w-0 flex-1 border-0 bg-transparent px-1 text-sm text-accent placeholder:text-muted focus:outline-none focus-visible:outline-none"
       />
       <button
         type="submit"

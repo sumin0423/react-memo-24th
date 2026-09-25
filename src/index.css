@@ -12,18 +12,25 @@
   font-display: swap;
 }
 @theme {
-  --color-page: #fff7fb;
+  --color-page: #fff3f5;
   --color-surface: #ffffff;
-  --color-accent: #713b55;
-  --color-muted: #9c6d83;
-  --color-soft: #ffb8d2;
-  --color-highlight: #fe71a5;
-  --color-daily: #ffdbe9;
-  --color-work: #ffb8d2;
-  --color-others: #ffe8f2;
+  --color-accent: #603541;
+  --color-muted: #875563;
+  --color-soft: #ffabb9;
+  --color-action: #ffa4b3;
+  --color-highlight: #a74160;
+  --color-daily-text: #a64d70;
+  --color-work-text: #8c3048;
+  --color-others-text: #74539a;
+  --color-daily: #ffdae5;
+  --color-work: #ffa4b3;
+  --color-others: #e5d5fa;
   --font-sans: Pretendard, sans-serif;
 }
 @layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
   body {
     margin: 0;
     background: var(--color-page);
@@ -38,4 +45,30 @@
     outline: 3px solid var(--color-highlight);
     outline-offset: 3px;
   }
+}
+
+.login-page :focus-visible {
+  outline-color: var(--color-highlight);
+}
+
+.login-page input {
+  color: var(--color-accent);
+}
+
+.login-page input:-webkit-autofill,
+.login-page input:-webkit-autofill:hover,
+.login-page input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-accent);
+  caret-color: var(--color-accent);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset;
+}
+
+@keyframes signup-banner {
+  0% { opacity: 0; }
+  10%, 80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.signup-success { animation: signup-banner 2s forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .signup-success { animation: none; }
 }

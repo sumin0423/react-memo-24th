@@ -1,0 +1,36 @@
+import { afterEach, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import Signup from "./Signup";
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+it("requires a valid email, eight characters, and matching confirmation before submitting", async () => {
+  const done = vi.fn();
+  const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ success: true, data: { userId: 1, email: "test@example.com" } }), { status: 201 }));
+  vi.stubGlobal("fetch", fetchMock);
+  render(<Signup onBack={() => {}} onComplete={done} />);
+  const button = screen.getByRole("button", { name: "회원가입" }) as HTMLButtonElement;
+  fireEvent.change(screen.getByLabelText("이메일"), { target: { value: "test@example.com" } });
+  fireEvent.change(screen.getByLabelText("비밀번호", { exact: true }), { target: { value: "short" } });
+  fireEvent.change(screen.getByLabelText("비밀번호 확인"), { target: { value: "different" } });
+  expect(button.disabled).toBe(true);
+  expect(screen.getByText("비밀번호가 일치하지 않습니다.")).toBeTruthy();
+  fireEvent.change(screen.getByLabelText("비밀번호", { exact: true }), { target: { value: "password123" } });
+  fireEvent.change(screen.getByLabelText("비밀번호 확인"), { target: { value: "password123" } });
+  expect(button.disabled).toBe(false);
+  fireEvent.click(button);
+  expect((await screen.findByRole("status")).textContent).toContain("회원가입이 완료되었습니다");
+  expect(done).not.toHaveBeenCalled();
+  expect(button.disabled).toBe(true);
+  await vi.waitFor(() => expect(done).toHaveBeenCalledOnce(), { timeout: 3000 });
+  expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ email: "test@example.com", password: "password123" });
+});
+it("shows duplicate-email errors without treating signup as successful", async () => {
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ success: false, data: null, message: "이미 사용 중인 이메일입니다." }), { status: 409 })));
+  const done = vi.fn();
+  render(<Signup onBack={() => {}} onComplete={done} />);
+  fireEvent.change(screen.getByLabelText("이메일"), { target: { value: "test@example.com" } });
+  fireEvent.change(screen.getByLabelText("비밀번호", { exact: true }), { target: { value: "password123" } });
+  fireEvent.change(screen.getByLabelText("비밀번호 확인"), { target: { value: "password123" } });
+  fireEvent.click(screen.getByRole("button", { name: "회원가입" }));
+  expect((await screen.findByRole("alert")).textContent).toContain("이미 사용 중");
+  expect(done).not.toHaveBeenCalled();
+});
